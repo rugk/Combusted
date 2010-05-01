@@ -1,0 +1,6 @@
+## Interface: 30300
+## Title: Combusted
+## Notes: Combustion Fix
+## Author: Silverwind
+## Dependancies: Bartender4
+Combusted.lua

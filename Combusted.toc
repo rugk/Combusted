@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Title: Combusted
-## Notes: Combustion Fix
+## Notes: Fix for the Combustion cooldown bug (only Bartender4 supported currently)
 ## Author: Silverwind
 ## Dependancies: Bartender4
 Combusted.lua

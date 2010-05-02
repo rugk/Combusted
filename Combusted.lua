@@ -1,4 +1,4 @@
-local cds = {}
+local cds, cd = {}, nil
 local kill = function() return end
 
 local f = CreateFrame"Frame"
@@ -7,7 +7,7 @@ f:RegisterEvent"PLAYER_ENTERING_WORLD"
 f:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		for i=1,120 do
-			local cd = _G["BT4Button"..i.."Cooldown"]
+			cd = _G["BT4Button"..i.."Cooldown"]
 			if cd then
 				if cd:GetParent().icon:GetTexture() == "Interface\\Icons\\Spell_Fire_SealOfFire" then
 					cds[#cds+1] = cd

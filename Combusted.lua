@@ -1,4 +1,9 @@
-local start, ids, _G = nil, {}, _G
+local start, ids, _G = -500, {}, _G
+
+local function checkslot(slot)
+	ids[slot] = select(4,_G.GetActionInfo(slot)) == 11129
+end
+
 local f = CreateFrame"Frame"
 f:RegisterEvent"COMBAT_LOG_EVENT_UNFILTERED"
 f:RegisterEvent"PLAYER_ENTERING_WORLD"
@@ -9,24 +14,25 @@ f:SetScript("OnEvent", function(self, event, ...)
 		if arg2 == "SPELL_AURA_REMOVED" and arg6 == _G.UnitGUID"player" then
 				start = _G.GetTime()
 		end
+	elseif event == "ACTIONBAR_SLOT_CHANGED" then
+		checkslot(...)
 	else
 		for i=1,120 do
-			if select(4,_G.GetActionInfo(i)) == 28682 then
-				ids[i] = true
-			else
-				ids[i] = false
-			end
+			checkslot(i)
 		end
+		self:UnregisterEvent"PLAYER_ENTERING_WORLD"
 	end
 end)
 
 local oldGetActionCooldown = GetActionCooldown
-function GetActionCooldown(...)
-	local slot = ...
-	if not start then return oldGetActionCooldown(...) end
-	if ids[slot] and (start + 120 > _G.GetTime()) then
-		return start, 120, 1
+function GetActionCooldown(slot)
+	if ids[slot] then
+		if start + 120 > _G.GetTime() then
+			return start, 120, 1
+		else
+			return oldGetActionCooldown(slot)
+		end
 	else
-		return oldGetActionCooldown(...)
+		return oldGetActionCooldown(slot)
 	end
 end

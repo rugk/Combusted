@@ -1,13 +1,44 @@
 local start, ids, _G = -500, {}, _G
+local oldGetActionCooldown = GetActionCooldown
+
+local function hook(doHook)
+	if doHook then
+		function GetActionCooldown(slot)
+			if ids[slot] then
+				if start + 120 > _G.GetTime() then
+					return start, 120, 1
+				else
+					return oldGetActionCooldown(slot)
+				end
+			else
+				return oldGetActionCooldown(slot)
+			end
+		end
+	else
+		GetActionCooldown = oldGetActionCooldown
+	end
+end
 
 local function checkslot(slot)
 	ids[slot] = select(4,_G.GetActionInfo(slot)) == 11129
 end
 
+local function scan()
+	if select(2,UnitClass"player") == "MAGE" and select(5,GetTalentInfo(2,20)) == 1 then
+		hook(true)
+		for i=1,120 do
+			checkslot(i)
+		end
+	else
+		hook(false)
+	end
+end
+
 local f = CreateFrame"Frame"
 f:RegisterEvent"COMBAT_LOG_EVENT_UNFILTERED"
-f:RegisterEvent"PLAYER_ENTERING_WORLD"
 f:RegisterEvent"ACTIONBAR_SLOT_CHANGED"
+f:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
+f:RegisterEvent"PLAYER_ENTERING_WORLD"
 f:SetScript("OnEvent", function(self, event, ...)
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		if arg9 ~= 28682 then return end
@@ -16,23 +47,10 @@ f:SetScript("OnEvent", function(self, event, ...)
 		end
 	elseif event == "ACTIONBAR_SLOT_CHANGED" then
 		checkslot(...)
+	elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
+		scan()
 	else
-		for i=1,120 do
-			checkslot(i)
-		end
+		scan()
 		self:UnregisterEvent"PLAYER_ENTERING_WORLD"
 	end
 end)
-
-local oldGetActionCooldown = GetActionCooldown
-function GetActionCooldown(slot)
-	if ids[slot] then
-		if start + 120 > _G.GetTime() then
-			return start, 120, 1
-		else
-			return oldGetActionCooldown(slot)
-		end
-	else
-		return oldGetActionCooldown(slot)
-	end
-end

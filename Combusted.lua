@@ -24,7 +24,7 @@ local function checkslot(slot)
 end
 
 local function scan()
-	if select(2,UnitClass"player") == "MAGE" and select(5,GetTalentInfo(2,20)) == 1 then
+	if select(2,_G.UnitClass"player") == "MAGE" and select(5,_G.GetTalentInfo(2,20)) == 1 then
 		hook(true)
 		for i=1,120 do
 			checkslot(i)
@@ -43,7 +43,7 @@ f:SetScript("OnEvent", function(self, event, ...)
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		if arg9 ~= 28682 then return end
 		if arg2 == "SPELL_AURA_REMOVED" and arg6 == _G.UnitGUID"player" then
-				start = _G.GetTime()
+			start = _G.GetTime()
 		end
 	elseif event == "ACTIONBAR_SLOT_CHANGED" then
 		checkslot(...)

@@ -4,14 +4,15 @@ local oldGetActionCooldown = GetActionCooldown
 local function hook(doHook)
 	if doHook then
 		function GetActionCooldown(slot)
+			local startTime, duration, enable = oldGetActionCooldown(slot)
 			if ids[slot] then
 				if start + 120 > _G.GetTime() then
 					return start, 120, 1
 				else
-					return oldGetActionCooldown(slot)
+					return startTime, duration, enable
 				end
 			else
-				return oldGetActionCooldown(slot)
+				return startTime, duration, enable
 			end
 		end
 	else
@@ -20,7 +21,11 @@ local function hook(doHook)
 end
 
 local function checkslot(slot)
-	ids[slot] = select(4,_G.GetActionInfo(slot)) == 11129
+	if select(4,_G.GetActionInfo(slot)) == 11129 then
+		ids[slot] = true
+	else
+		ids[slot] = nil
+	end
 end
 
 local function scan()
